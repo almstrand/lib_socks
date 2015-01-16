@@ -18,6 +18,7 @@ documentation of the referenced functions to support more complex requirements.
 
 ## HTTP static file server
 
+    // Construct simple server hosting static files in directory '../web'.
     server.Router router = new server.Router();
     router.addRequestHandler(new server.StaticHttpRequestHandler("../web"));
     new server.Server().bind()
@@ -34,14 +35,13 @@ documentation of the referenced functions to support more complex requirements.
     // Define REST request handler.
     @server.UriPath("/food")
     class RestHandler extends server.HttpRequestHandler {
-
       @server.GET("/{maincourse}/{ingredient}")
       void getSomething(int requestId, HttpRequest httpRequest, Map<String, String> pathParams) {
         print("Main Course=${pathParams["maincourse"]}\nIngredient=${pathParams["ingredient"]}");
       }
     }
 
-    // Configure server in its simplest form.
+    // Construct simple server forwarding requests to REST request handler.
     server.Router router = new server.Router();
     router.addRequestHandler(new RestHandler());
     new server.Server().bind()
@@ -51,7 +51,7 @@ documentation of the referenced functions to support more complex requirements.
         });
     });
 
-A HTTP GET request to ```http://localhost/food/pizza/tomato``` will output:
+An HTTP GET request to ```http://localhost/food/pizza/tomato``` will output:
 
     maincourse=pizza
     ingredient=tomato
@@ -79,7 +79,7 @@ A HTTP GET request to ```http://localhost/food/pizza/tomato``` will output:
       }
     }
 
-    // Configure server in its simplest form
+    // Construct simple server forwarding requests to WebSocket STOMP request handler.
     server.Router router = new server.Router();
     router.addRequestHandler(new MyWebSocketStompHandler());
     new server.Server().bind()
@@ -93,14 +93,12 @@ A HTTP GET request to ```http://localhost/food/pizza/tomato``` will output:
 
     import "package:socks/client_socks.dart" as client;
 
-    // Configure client in its simplest form
+    // Construct simple client, sending a message to the "kitchen" destination.
     client.WebSocketStompConnection.connect("ws://localhost/stomp", "localhost")
     .then((client.WebSocketStompConnection connection) {
-
-        // Connected. Send a message to all subscribers to the "kitchen" destination.
         connection.send("kitchen", "cheese");
     });
 
 ## Notes
-Server instances can support any combination of RESTful, WebSocket, and STOMP WebSocket services by adding corresponding
-request handlers to the Router instance as shown in the above examples.
+Server instances can support any combination of static file hosting and RESTful, WebSocket, and STOMP WebSocket services
+by adding corresponding request handlers to the Router instance as shown in the above examples.
