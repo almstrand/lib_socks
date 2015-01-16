@@ -1,8 +1,8 @@
 name: socks
-version: 0.1.2
+version: 0.1.3
 author: Cristian Almstrand <cristian.almstrand@gmail.com>
 homepage: https://github.com/almstrand/lib_socks
-description: Client and server package for building and consuming HTTP/1.1 web services including RESTful services, WebSocket services, and STOMP 1.2 WebSocket services.
+description: One-stop-shop client and server libraries for static file hosting and building/consuming HTTP/1.1 web services including RESTful services, WebSocket services, and STOMP 1.2 WebSocket services.
 environment:
   sdk: '>=1.7.0 <2.0.0'
 dependencies:

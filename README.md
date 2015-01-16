@@ -1,15 +1,16 @@
 # socks
 
-Client and server library for building and consuming robust [HTTP/1.1](http://www.w3.org/Protocols/rfc2616/rfc2616.html)
-web services including [REST](http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm)ful services,
+One-stop-shop client and server libraries for static file hosting and building/consuming robust
+[HTTP/1.1](http://www.w3.org/Protocols/rfc2616/rfc2616.html) web services including
+[REST](http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm)ful services,
 [WebSocket](https://tools.ietf.org/html/rfc6455) services, and
 [STOMP 1.2](https://stomp.github.io/stomp-specification-1.2.html) WebSocket services.
 
-The server-side part of the library includes an HTTP/HTTPS server for hosting static files, and provides metadata
-annotations to simplify developing REST, WebSocket, and STOMP WebSocket services.
+The server-side library includes an HTTP/HTTPS server for hosting static files, and provides metadata annotations to
+simplify developing REST, WebSocket, and STOMP WebSocket services.
 
-The client-side simplifies connecting with HTTP/HTTPS servers, making REST requests, parsing REST responses, performing
-WebSocket upgrades, sending STOMP-formatted frames, and parsing received STOMP frames.
+The client-side library simplifies connecting with HTTP/HTTPS servers, making REST requests, parsing REST responses,
+performing WebSocket upgrades, sending STOMP-formatted frames, and parsing received STOMP frames.
 
 # Sample code
 
@@ -33,11 +34,11 @@ documentation of the referenced functions to support more complex requirements.
     import "package:socks/server_socks.dart" as server;
 
     // Define REST request handler.
-    @server.UriPath("/food")
+    @server.UriPath("/kitchen/{category}")
     class RestHandler extends server.HttpRequestHandler {
-      @server.GET("/{maincourse}/{ingredient}")
-      void getSomething(int requestId, HttpRequest httpRequest, Map<String, String> pathParams) {
-        print("Main Course=${pathParams["maincourse"]}\nIngredient=${pathParams["ingredient"]}");
+      @server.GET("/{dish}/{ingredient}")
+      void getFood(int requestId, HttpRequest httpRequest, Map<String, String> pathParams) {
+        print("Dish=${pathParams["dish"]}\nIngredient=${pathParams["ingredient"]}");
       }
     }
 
@@ -51,9 +52,10 @@ documentation of the referenced functions to support more complex requirements.
         });
     });
 
-An HTTP GET request to ```http://localhost/food/pizza/tomato``` will output:
+An HTTP GET request to ```http://localhost/kitchen/food/pizza/tomato``` produces console output:
 
-    maincourse=pizza
+    category=food
+    dish=pizza
     ingredient=tomato
 
 ## WebSocket STOMP server
@@ -62,8 +64,8 @@ An HTTP GET request to ```http://localhost/food/pizza/tomato``` will output:
     import "package:socks/shared_socks.dart" as shared;
 
     // Create STOMP "kitchen" destination.
-    class MyDestination extends server.StompDestination {
-      MyDestination() : super("kitchen");
+    class MyKitchen extends server.StompDestination {
+      MyKitchen() : super("kitchen");
       Future onMessage(String transaction, shared.StompMessage stompMessage) {
         print("Received message: ${stompMessage.message}");
         return new Future.value();
@@ -73,9 +75,8 @@ An HTTP GET request to ```http://localhost/food/pizza/tomato``` will output:
     // Create WebSocket STOMP request handler.
     @server.UriPath("/stomp")
     class MyWebSocketStompHandler extends server.StompRequestHandler {
-      MyWebSocketStompHandler({int maxFrameHeaders, int maxHeaderLen, int maxBodyLen}) :
-        super(maxFrameHeaders: maxFrameHeaders, maxHeaderLen: maxHeaderLen, maxBodyLen: maxBodyLen) {
-        addDestination(new MyDestination());
+      MyWebSocketStompHandler() {
+        addDestination(new MyKitchen());
       }
     }
 
