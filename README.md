@@ -19,6 +19,8 @@ documentation of the referenced functions to support more complex requirements.
 
 ## HTTP static file server
 
+    import "package:socks/server_socks.dart" as server;
+
     // Construct simple server hosting static files in directory '../web'.
     server.Router router = new server.Router();
     router.addRequestHandler(new server.StaticHttpRequestHandler("../web"));
@@ -38,7 +40,8 @@ documentation of the referenced functions to support more complex requirements.
     class RestHandler extends server.HttpRequestHandler {
       @server.GET("/{dish}/{ingredient}")
       void getFood(int requestId, HttpRequest httpRequest, Map<String, String> pathParams) {
-        print("Dish=${pathParams["dish"]}\nIngredient=${pathParams["ingredient"]}");
+        print("Category=${pathParams["category"]}\nDish=${pathParams["dish"]}\nIngredient= \
+            ${pathParams["ingredient"]}");
       }
     }
 
@@ -54,9 +57,9 @@ documentation of the referenced functions to support more complex requirements.
 
 An HTTP GET request to ```http://localhost/kitchen/food/pizza/tomato``` produces console output:
 
-    category=food
-    dish=pizza
-    ingredient=tomato
+    Category=food
+    Dish=pizza
+    Ingredient=tomato
 
 ## WebSocket STOMP server
 
@@ -67,7 +70,7 @@ An HTTP GET request to ```http://localhost/kitchen/food/pizza/tomato``` produces
     class MyKitchen extends server.StompDestination {
       MyKitchen() : super("kitchen");
       Future onMessage(String transaction, shared.StompMessage stompMessage) {
-        print("Received message: ${stompMessage.message}");
+        print("Received ingredient: ${stompMessage.message}");
         return new Future.value();
       }
     }
@@ -94,11 +97,31 @@ An HTTP GET request to ```http://localhost/kitchen/food/pizza/tomato``` produces
 
     import "package:socks/client_socks.dart" as client;
 
-    // Construct simple client, sending a message to the "kitchen" destination.
+    // Construct simple client.
     client.WebSocketStompConnection.connect("ws://localhost/stomp", "localhost")
     .then((client.WebSocketStompConnection connection) {
-        connection.send("kitchen", "cheese");
+
+      // Subscribe to the "kitchen" destination
+      client.StompSubscription subscription = connection.subscribe("kitchen")
+        ..onSubscribed.listen((_) {
+
+          // Send message to the "kitchen" destination.
+          print("Sending cheese!);
+          connection.send("kitchen", "cheese");
+        })
+        ..onMessage.listen((shared.StompMessage stompMessage) {
+          print("Got my ${stompMessage.message} back!");
+        });
     });
+
+This produces server-side console output:
+
+    Received ingredient: cheese
+
+and client-side console output:
+
+    Sending cheese!
+    Got my cheese back!
 
 ## Notes
 Server instances can support any combination of static file hosting and RESTful, WebSocket, and STOMP WebSocket services
