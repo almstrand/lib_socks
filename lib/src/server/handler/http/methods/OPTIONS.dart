@@ -5,5 +5,5 @@ part of server_socks;
  * path pattern that must be matched for the decorated class method to be invoked.
  */
 class OPTIONS extends HttpMethod {
-  const OPTIONS(final String path) : super("OPTIONS", path);
+  const OPTIONS({final String path}) : super("OPTIONS", path: path);
 }

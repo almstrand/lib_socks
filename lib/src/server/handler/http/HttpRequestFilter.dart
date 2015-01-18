@@ -52,7 +52,7 @@ class HttpRequestFilter {
   Map<String, String> match(String uriPath) {
     Map<String, String> keyValuePairs = new Map<String, String>();
     if (_regExp == null) {
-      if (uriPath == null || uriPath.length == 0) {
+      if (uriPath == null || uriPath.length == 0 || uriPath == "/") {
         return keyValuePairs;
       }
       else {

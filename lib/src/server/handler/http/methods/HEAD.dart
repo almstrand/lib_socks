@@ -5,5 +5,5 @@ part of server_socks;
  * path pattern that must be matched for the decorated class method to be invoked.
  */
 class HEAD extends HttpMethod {
-  const HEAD(final String path) : super("HEAD", path);
+  const HEAD({final String path}) : super("HEAD", path: path);
 }

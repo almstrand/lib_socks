@@ -80,24 +80,14 @@ class StaticHttpRequestHandler extends HttpRequestHandler {
         file.openRead().pipe(response)
         .catchError((e) {
           _log.severe("Failed serving file $stringPath.");
-          _sendInternalError(request.response);
+          sendInternalError(request.response);
         });
       }
       else {
-        _sendNotFound(request.response);
+        sendNotFound(request.response);
       }
       return true;
     }
     return false;
-  }
-
-  void _sendNotFound(HttpResponse response) {
-    response.statusCode = HttpStatus.NOT_FOUND;
-    response.close();
-  }
-
-  void _sendInternalError(HttpResponse response) {
-    response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-    response.close();
   }
 }

@@ -5,5 +5,5 @@ part of server_socks;
  * pattern that must be matched for the decorated class method to be invoked.
  */
 class PUT extends HttpMethod {
-  const PUT(final String path) : super("PUT", path);
+  const PUT({final String path}) : super("PUT", path: path);
 }

@@ -54,7 +54,7 @@ class Router {
 
     // Optionally respond with HTTP 404 if no route matched request path
     if (_send404) {
-      _log.warning(() => "No route registered to handle HTTP request $requestId.");
+      _log.warning(() => "No route registered to handle HTTP ${httpRequest.method} request $requestId.");
       httpRequest.response.statusCode = HttpStatus.NOT_FOUND;
       httpRequest.response.reasonPhrase = "Not found";
       httpRequest.response.close();

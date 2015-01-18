@@ -5,5 +5,5 @@ part of server_socks;
  * path pattern that must be matched for the decorated class method to be invoked.
  */
 class CONNECT extends HttpMethod {
-  const CONNECT(final String path) : super("CONNECT", path);
+  const CONNECT({final String path}) : super("CONNECT", path: path);
 }

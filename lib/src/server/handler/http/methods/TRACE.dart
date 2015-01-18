@@ -5,5 +5,5 @@ part of server_socks;
  * path pattern that must be matched for the decorated class method to be invoked.
  */
 class TRACE extends HttpMethod {
-  const TRACE(final String path) : super("TRACE", path);
+  const TRACE({final String path}) : super("TRACE", path: path);
 }

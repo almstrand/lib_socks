@@ -11,8 +11,8 @@ class UriPath {
   // parameter names surrounded by moustaches to cause the corresponding string value to be extracted from the URI path.
   // For example, specifying a path expression "/world/{continent}/{country}" would cause key/value pairs
   // continent=Europe and country=France to be passes in as parameters to the decorated method when matched with a URI
-  // referencing path "/world/Europe/Sweden".
+  // referencing path "/world/Europe/Sweden". Set to null to represent the root path (i.e. "/".)
   final String path;
 
-  const UriPath(final String this.path);
+  const UriPath([final String this.path]);
 }

@@ -5,5 +5,5 @@ part of server_socks;
  * pattern that must be matched for the decorated class method to be invoked.
  */
 class GET extends HttpMethod {
-  const GET(final String path) : super("GET", path);
+  const GET({final String path}) : super("GET", path: path);
 }

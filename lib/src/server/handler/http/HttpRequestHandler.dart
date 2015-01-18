@@ -26,11 +26,11 @@ class HttpRequestHandler {
           _log.severe("Request handler ${runtimeType} may not have multiple @$expectedClassAnnotation annotations; ignoring ${path == null ? "additional empty URI path" : ("URI path $path")}.");
         }
         else {
-          uriPath = path;
+          uriPath = path == null ? null : path.trim();
         }
       }
     }
-    _log.info("Request handler ${runtimeType} responds to HTTP requests targeting ${uriPath == null ? "no path (hint: annotate handler class with @$expectedClassAnnotation)" : ("$uriPath")}.");
+    _log.info("Request handler ${runtimeType} responds to HTTP requests targeting path ${uriPath == null ? "/ (hint: annotate handler class with @$expectedClassAnnotation)" : uriPath}.");
 
     // Reflect on class methods and create filters to determine when to invoke each respective method upon receiving an HTTP request.
     String expectedMethodAnnotation = MirrorSystem.getName(reflectClass(HttpMethod).qualifiedName);
@@ -54,15 +54,30 @@ class HttpRequestHandler {
 
               // Extract HTTP method and URI path filters.
               HttpMethod httpMethodAnnotation = (annotation.reflectee as HttpMethod);
-              String path = httpMethodAnnotation.path;
+              String path = httpMethodAnnotation.path == null ? null : httpMethodAnnotation.path.trim();
               if (filterPath != null && path != filterPath) {
                 _log.warning("Method $methodName in request handler ${runtimeType} has multiple annotations (possibly sub-classing) @${MirrorSystem.getName(reflectType(HttpMethod).simpleName)}; ignoring annotation referencing ${path == null ? "additional empty URI path" : ("URI path ${(uriPath == null ? "" : uriPath) + path}")}.");
               }
               else {
 
-                // Combine with any class-level path and add filter to determine when appropriate to route requests to this method.
-                filterPath = "/" + (uriPath == null ? "" : uriPath) + "/" + path;
-                filterPath = filterPath.replaceAll("//", "/").replaceAll("//", "/");
+                // Is either a class or method path annotation defined?
+                if (uriPath != null || path != null) {
+
+                  // Yes, combine class path and method path.
+                  filterPath = "/" + (uriPath == null ? "" : uriPath) + (path == null ? "" : ("/" + path));
+
+                  // Ensure combined path has single leading path separator, no duplicate separators, and no trailing separator.
+                  int filterPathLen;
+                  do {
+                    filterPathLen = filterPath.length;
+                    filterPath = filterPath.replaceAll("//", "/");
+                  } while (filterPath.length != filterPathLen);
+                  while (filterPath.endsWith("/")) {
+                    filterPath = filterPath.substring(0, filterPath.length - 1);
+                  }
+                }
+
+                // Add filter to determine when to route requests to this method.
                 HttpRequestFilter httpRequestFilter = new HttpRequestFilter(filterPath);
                 HttpRequestMapping httpRequestMapping = new HttpRequestMapping(httpRequestFilter, method.simpleName);
                 List<HttpRequestMapping> methodFilters = _httpRequestMethodMappings[httpMethodAnnotation.method];
@@ -71,7 +86,7 @@ class HttpRequestHandler {
                   _httpRequestMethodMappings[httpMethodAnnotation.method] = methodFilters;
                 }
                 methodFilters.add(httpRequestMapping);
-                _log.info("Method $methodName in request handler ${runtimeType} responds to HTTP ${httpMethodAnnotation.method.toUpperCase()} requests targeting ${filterPath == null ? "no path (hint: annotate handler class with @$expectedClassAnnotation or methods with @$expectedMethodAnnotation sub-class)" : ("$filterPath")}.");
+                _log.info("Method $methodName in request handler ${runtimeType} responds to HTTP ${httpMethodAnnotation.method.toUpperCase()} requests targeting path ${filterPath == null ? "/ (hint: annotate handler class with @$expectedClassAnnotation or methods with @$expectedMethodAnnotation sub-class)" : filterPath}.");
               }
             }
           }
@@ -81,16 +96,16 @@ class HttpRequestHandler {
   }
 
   /**
-   * Invoked when receiving a request on the HTTP connection. Parses request and invokes any methods registered
-   * to process HTTP request matching the HTTP method and URI path.
+   * Invoked when receiving a request on the HTTP connection. Parses request and invokes any methods registered to
+   * process HTTP request matching the HTTP method and URI path.
    *
    * @param requestId
    *      Integer identifying this HTTP request.
    * @param request
    *      The received HTTP request.
    * @param pathParams
-   *      Parameter values extracted from wildcard expressions matching sub-strings of the received HTTP request
-   *      URI path.
+   *      Parameter values extracted from wildcard expressions matching sub-strings of the received HTTP request URI
+   *      path.
    * @return
    *      True if this handler responded to the request.
    */
@@ -110,5 +125,20 @@ class HttpRequestHandler {
       }
     }
     return false;
+  }
+
+  void sendOK(HttpResponse response) {
+    response.statusCode = HttpStatus.OK;
+    response.close();
+  }
+
+  void sendNotFound(HttpResponse response) {
+    response.statusCode = HttpStatus.NOT_FOUND;
+    response.close();
+  }
+
+  void sendInternalError(HttpResponse response) {
+    response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+    response.close();
   }
 }

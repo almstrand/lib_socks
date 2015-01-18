@@ -5,5 +5,5 @@ part of server_socks;
  * path pattern that must be matched for the decorated class method to be invoked.
  */
 class DELETE extends HttpMethod {
-  const DELETE(final String path) : super("DELETE", path);
+  const DELETE({final String path}) : super("DELETE", path: path);
 }

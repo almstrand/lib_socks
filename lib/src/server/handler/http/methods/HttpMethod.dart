@@ -10,5 +10,5 @@ abstract class HttpMethod extends UriPath {
   // The HTTP method that must be matched for the decorated class method to be invoked, e.g. "GET".
   final String method;
 
-  const HttpMethod(final String this.method, final String path) : super(path);
+  const HttpMethod(final String this.method, {final String path}) : super(path);
 }
