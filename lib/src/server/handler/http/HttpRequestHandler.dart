@@ -127,18 +127,24 @@ class HttpRequestHandler {
     return false;
   }
 
-  void sendOK(HttpResponse response) {
-    response.statusCode = HttpStatus.OK;
+  void _send(HttpResponse response, int statusCode, String reasonPhrase, String body) {
+    response.statusCode = statusCode;
+    response.reasonPhrase = reasonPhrase;
+    if (body != null) {
+      response.write(body);
+    }
     response.close();
   }
 
-  void sendNotFound(HttpResponse response) {
-    response.statusCode = HttpStatus.NOT_FOUND;
-    response.close();
+  void sendOK(HttpResponse response, {String reasonPhrase: "OK", String body}) {
+    _send(response, HttpStatus.OK, reasonPhrase, body);
   }
 
-  void sendInternalError(HttpResponse response) {
-    response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-    response.close();
+  void sendNotFound(HttpResponse response, {String reasonPhrase: "Not found", String body}) {
+    _send(response, HttpStatus.NOT_FOUND, reasonPhrase, body);
+  }
+
+  void sendInternalError(HttpResponse response, {String reasonPhrase: "Internal Server Error", String body}) {
+    _send(response, HttpStatus.INTERNAL_SERVER_ERROR, reasonPhrase, body);
   }
 }
