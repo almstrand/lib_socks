@@ -1,7 +1,5 @@
 library shared_socks;
 
-import 'package:logging/logging.dart';
-
 part 'src/shared/util/Logging.dart';
 part 'src/shared/protocol/stomp/Version.dart';
 part 'src/shared/protocol/stomp/1.2/StompSubscription.dart';

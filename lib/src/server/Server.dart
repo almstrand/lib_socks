@@ -99,7 +99,7 @@ class Server {
    * @return
    *      Future referencing server upon success, or referencing SocketException instance upon error.
    */
-  Future<Server> bindSecure({dynamic address: null, int port: 443, List<String> allowedOrigins, String database, String password, String certificateName}) {
+  Future<Server> bindSecure({dynamic address: null, int port: 443, List<String> allowedOrigins, bool autoCompress: true, String database, String password, String certificateName}) {
 
     // Bind to all interfaces if none specified
     if (address == null) {
